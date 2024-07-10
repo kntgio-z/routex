@@ -21,6 +21,7 @@ export const RouteX = async (app: Express, rootDir: string): Promise<void> => {
           const ext = path.extname(file);
           const routePath = path.join(baseRoute, path.basename(file, ext))
             .replace(/\[([^[\]]+)\]/g, ":$1")
+            .replace(/\\/g, "/")
             .replace(/\/index$/, "");
 
           if (ext === ".js" || ext === ".ts") {
