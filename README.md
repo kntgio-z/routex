@@ -21,12 +21,16 @@ npm install @tralse/routex
 
 ```javascript
 import express from "express";
-import loadRoutes from "@tralse/routex ";
+import loadRoutes from "@tralse/routex";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 // Load routes based on configuration files in the module's directory
-await loadRoutes(app);
+await loadRoutes(app, __dirname);
 
 // Start server
 const PORT = process.env.PORT || 3000;
