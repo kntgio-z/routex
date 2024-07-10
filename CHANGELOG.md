@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/kntgio-z/routex/compare/v1.1.1...v1.1.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* Fix bug where path characters with \ are not converted to / ([6b8c3d5](https://github.com/kntgio-z/routex/commit/6b8c3d51f7dbcd6b09fdb720a26bd3716269a4af))
+
 ### [1.1.1](https://github.com/kntgio-z/routex/compare/v1.1.0...v1.1.1) (2024-07-10)
 
 
