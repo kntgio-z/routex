@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import loadConfig from './config';
 
-const RouteX = async (app: Express): Promise<void> => {
+export const RouteX = async (app: Express): Promise<void> => {
   // Assuming loadConfig now fetches the configuration relative to the module's directory
   const config = await loadConfig(__dirname);
   const routesPath = path.resolve(__dirname, config.routesPath);
@@ -31,5 +31,3 @@ const RouteX = async (app: Express): Promise<void> => {
 
   await walkDirectory(routesPath);
 };
-
-export default RouteX;
