@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import loadConfig from './config';
 
-export const RouteX = async (app: Express): Promise<void> => {
-  // Assuming loadConfig now fetches the configuration relative to the module's directory
-  const config = await loadConfig(__dirname);
-  const routesPath = path.resolve(__dirname, config.routesPath);
+export const RouteX = async (app: Express, rootDir: string): Promise<void> => {
+  const config = await loadConfig(rootDir);
+  const routesPath = path.resolve(rootDir, config.routesPath);
 
   const walkDirectory = async (dirPath: string, baseRoute = ''): Promise<void> => {
     const files = fs.readdirSync(dirPath);
