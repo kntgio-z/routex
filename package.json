@@ -1,0 +1,38 @@
+{
+  "name": "mynpm-template",
+  "version": "1.0.0",
+  "description": "Template.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "prestart": "npm test",
+    "build": "tsup",
+    "pub": "tsup && npm publish --access=public && exit",
+    "release": "standard-version && git push --follow-tags origin main",
+    "release:minor": "standard-version --release-as minor && git push --follow-tags origin main",
+    "release:major": "standard-version --release-as major && git push --follow-tags origin main"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kntgio-z/mynpm-template.git"
+  },
+  "author": "Gio Kent",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kntgio-z/mynpm-template/issues"
+  },
+  "homepage": "https://github.com/kntgio-z/mynpm-template#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "standard-version": "^9.5.0",
+    "supertest": "^7.0.0",
+    "tsup": "^8.1.0",
+    "typescript": "^5.4.5"
+  }
+}
