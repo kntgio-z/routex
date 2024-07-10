@@ -14,14 +14,14 @@ The `loadRoutes` function in RouteX facilitates automatic loading of routes into
 Install RouteX via npm:
 
 ```bash
-npm install routex --save
+npm install @tralse/routex 
 ```
 
 ### Usage
 
 ```javascript
 import express from "express";
-import loadRoutes from "routex";
+import loadRoutes from "@tralse/routex ";
 
 const app = express();
 
