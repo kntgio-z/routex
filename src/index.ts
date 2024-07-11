@@ -1,6 +1,7 @@
 import { Express } from "express";
 import fs from "fs";
 import path from "path";
+import { pathToFileURL } from "url";
 import loadConfig from "./config";
 import { log } from "@tralse/developer-logs";
 
@@ -12,11 +13,11 @@ interface Options {
  * Loads and registers routes from a specified directory into an Express application.
  *
  * @remarks
- * This function is currently not usable in `.mjs` modules.
+ * This function is already usable in `.mjs` modules.
  *
  * @param app - The Express application instance.
  * @param rootDir - The root directory containing the routes configuration.
- * @param options - Optional configuration.
+ * @param options - Optional configuration for debugging.
  * @returns A promise that resolves when all routes are loaded.
  */
 export const RouteX = async (
@@ -60,7 +61,8 @@ export const RouteX = async (
             app.use(newRoutePath, route);
             log.green(`Loaded route: ${newRoutePath}`, "routex");
           } else if (ext === ".mjs") {
-            const { default: route } = await import(filePath);
+            const routeUrl = pathToFileURL(filePath).href;
+            const { default: route } = await import(routeUrl);
             const newRoutePath = `/${routePath}`;
             app.use(newRoutePath, route);
             log.green(`Loaded route: ${newRoutePath}`, "routex");
