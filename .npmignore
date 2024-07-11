@@ -5,6 +5,7 @@
 jsconfig.json
 tsconfig.json
 tsup.config.ts
+.markdownlint.json
 
 #custom ignores
 /dump
