@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/kntgio-z/routex/compare/v1.2.0...v1.3.0) (2024-07-11)
+
+
+### Features
+
+* Enable function for .mjs files ([2605edf](https://github.com/kntgio-z/routex/commit/2605edfaa25b9adb31382b93586738156f5c7631))
+
 ## [1.2.0](https://github.com/kntgio-z/routex/compare/v1.1.2...v1.2.0) (2024-07-11)
 
 
