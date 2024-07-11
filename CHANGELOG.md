@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/kntgio-z/routex/compare/v1.3.0...v1.4.0) (2024-07-11)
+
+
+### Features
+
+* Add features: ([86785fb](https://github.com/kntgio-z/routex/commit/86785fb8cb61b9aa8232116b43ae9a4c8bbc6c0a))
+
 ## [1.3.0](https://github.com/kntgio-z/routex/compare/v1.2.0...v1.3.0) (2024-07-11)
 
 

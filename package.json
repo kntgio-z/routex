@@ -1,6 +1,6 @@
 {
   "name": "@tralse/routex",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "RouteX is a lightweight package designed to simplify the management and loading of routes in an Express.js application based on configuration files.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
