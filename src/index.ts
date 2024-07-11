@@ -7,6 +7,7 @@ import { log } from "@tralse/developer-logs";
 
 interface Options {
   debug: boolean;
+  makeReport: boolean;
 }
 
 /**
@@ -17,7 +18,7 @@ interface Options {
  *
  * @param app - The Express application instance.
  * @param rootDir - The root directory containing the routes configuration.
- * @param options - Optional configuration for debugging.
+ * @param options - Optional configuration for debugging and reporting.
  * @returns A promise that resolves when all routes are loaded.
  */
 export const RouteX = async (
@@ -27,6 +28,12 @@ export const RouteX = async (
 ): Promise<void> => {
   const config = await loadConfig(rootDir);
   const routesPath = path.resolve(rootDir, config.routesPath);
+
+  let filesRead = 0;
+  let filesSuccessRead = 0;
+  let ignoredFiles = 0;
+  let loadedRoutes = 0;
+  let misses = 0;
 
   /**
    * Recursively walks through a directory and registers routes.
@@ -42,6 +49,7 @@ export const RouteX = async (
       const files = await fs.promises.readdir(dirPath);
 
       for (const file of files) {
+        filesRead++;
         const filePath = path.join(dirPath, file);
         const stats = await fs.promises.lstat(filePath);
 
@@ -55,28 +63,68 @@ export const RouteX = async (
             .replace(/\\/g, "/")
             .replace(/\/index$/, "");
 
-          if (ext === ".js" || ext === ".ts") {
-            const route = require(filePath);
-            const newRoutePath = `/${routePath}`;
-            app.use(newRoutePath, route);
+          const newRoutePath = `/${routePath}`;
+          const isIgnored = /\/_.*$/.test(newRoutePath);
+
+          if (isIgnored) {
+            ignoredFiles++;
+            continue;
+          }
+
+          try {
+            if (ext === ".js" || ext === ".ts") {
+              const route = require(filePath);
+              app.use(newRoutePath, route);
+            } else if (ext === ".mjs") {
+              const routeUrl = pathToFileURL(filePath).href;
+              const { default: route } = await import(routeUrl);
+              app.use(newRoutePath, route);
+            }
             log.green(`Loaded route: ${newRoutePath}`, "routex");
-          } else if (ext === ".mjs") {
-            const routeUrl = pathToFileURL(filePath).href;
-            const { default: route } = await import(routeUrl);
-            const newRoutePath = `/${routePath}`;
-            app.use(newRoutePath, route);
-            log.green(`Loaded route: ${newRoutePath}`, "routex");
+            loadedRoutes++;
+            filesSuccessRead++;
+          } catch (error) {
+            log.red(
+              `ROUTE_ERR: Error loading route: ${newRoutePath}. ${
+                options?.debug
+                  ? ""
+                  : "To view full error, add a parameter {debug: true} to the RouteX method."
+              }`,
+              "routex"
+            );
+            if (options?.debug) console.error(error);
+            misses++;
           }
         }
       }
     } catch (error) {
       log.red(
-        `Error loading routes from ${dirPath}. To view full error, add a parameter {debug: true} to the RouteX method.`,
+        `DIR_ERR: Error reading directory: ${dirPath}. ${
+          options?.debug
+            ? ""
+            : "To view full error, add a parameter {debug: true} to the RouteX method."
+        }`,
         "routex"
       );
       if (options?.debug) console.error(error);
+      misses++;
     }
   };
 
   await walkDirectory(routesPath);
+
+  if (options?.makeReport) {
+    const report = `
+    -------- RouteX Report --------
+    Total files processed: ${filesRead}
+    - Successfully read: ${filesSuccessRead}
+    - Ignored: ${ignoredFiles}
+    - Errors encountered: ${misses}
+    --------------------------------
+    Routes loaded: ${loadedRoutes}
+    --------------------------------
+    Success rate: ${(((filesRead - misses) / filesRead) * 100).toFixed(2)}%
+    `;
+    log.brightBlue(report, "routex");
+  }
 };
