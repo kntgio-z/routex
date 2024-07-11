@@ -5,38 +5,39 @@
 
 RouteX is a lightweight package designed to simplify the management and loading of routes in an Express.js application based on configuration files. It automates the process of routing setup, allowing developers to define routes in configuration files and seamlessly integrate them into their Express.js projects.
 
-## `loadRoutes` Function
+**WARNING**: This version is currently not usable in `.mjs` files.
 
-The `loadRoutes` function in RouteX facilitates automatic loading of routes into an Express.js application based on a specified configuration file (`routex.json`, `routex.config.js`, `routex.config.mjs`, `routex.config.cjs`). It recursively scans the specified directory for route files and dynamically mounts them in the Express app.
+## `RouteX` Function
+
+The `RouteX` function in RouteX facilitates automatic loading of routes into an Express.js application based on a specified configuration file (`routex.json`, `routex.config.js`, `routex.config.mjs`, `routex.config.cjs`). It recursively scans the specified directory for route files and dynamically mounts them in the Express app.
 
 ### Installation
 
 Install RouteX via npm:
 
 ```bash
-npm install @tralse/routex 
+npm install @tralse/routex
 ```
 
 ### Usage
 
 ```javascript
-import express from "express";
-import loadRoutes from "@tralse/routex";
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const express = require("express");
+const { RouteX } = require("@tralse/routex");
+const { fileURLToPath } = require("url");
 
 const app = express();
 
-// Load routes based on configuration files in the module's directory
-await loadRoutes(app, __dirname);
+(async () => {
+  // Load routes using RouteX
+  await RouteX(app, __dirname);
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  // Start server
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+})();
 ```
 
 ### Configuration
@@ -61,11 +62,13 @@ Example `routex.json`:
 #### Parameters
 
 - `app: Express`: The Express application instance where routes will be mounted.
-  **Description**
+- `dirname: string`: The filepath of the caller.
 
-1. `Automatic Configuration Loading`: The function automatically loads the configuration (`routex.json`, `routex.config.js`, etc.) relative to the module's directory (`__dirname`).
+#### Description
 
-2. `Dynamic Route Loading`: Routes are dynamically loaded from the specified routesPath directory in the configuration file. It supports CommonJS (`_.js, _.cjs`) and ECMAScript Module (`*.mjs`) formats.
+1. `Automatic Configuration Loading`: The function automatically loads the configuration (`routex.json`, `routex.config.js`, etc.) relative to the caller's directory (`__dirname`).
+
+2. `Dynamic Route Loading`: Routes are dynamically loaded from the specified routesPath directory in the configuration file. It supports CommonJS (`*.js, *.cjs`) and ECMAScript Module (`*.mjs`) formats.
 
 3. `Recursive Directory Walk`: The function recursively scans the routesPath directory, mounting routes based on file extensions (`js, ts, mjs`).
 
@@ -77,51 +80,82 @@ Assuming the following directory structure:
 project/
 │
 ├── routes/
-│ ├── users.mjs
-│ ├── products.mjs
-│ └── index.mjs
+│   │
+│   ├── users/
+│   │   ├── index.js
+│   │   └── [id]/
+│   │       └── index.js
+│   │
+│   ├── products.js
+│   │
+│   └── invoice/
+│       ├── customers.js
+│       └── merchants.js
 │
 ├── routex.json
-└── index.mjs
+└── index.js
 ```
 
-**users.mjs:**
+**/routes/users/index.js:**
 
 ```javascript
-import { Router } from "express";
-const router = Router();
+const router = require("express").Router();
 
 router.get("/", (req, res) => {
   res.send("Users list");
 });
 
-export default router;
+module.exports = router;
 ```
 
-**products.mjs:**
+**/routes/users/\[id\]/index.js:**
 
 ```javascript
-import { Router } from "express";
-const router = Router();
+const router = require("express").Router();
+
+router.get("/", (req, res) => {
+  const { id } = req.params;
+  if (id) res.send("Users with id " + id);
+  else res.status(400).send({ error: "Invalid id!" });
+});
+
+module.exports = router;
+```
+
+**/routes/products.js:**
+
+```javascript
+const router = require("express").Router();
 
 router.get("/", (req, res) => {
   res.send("Products list");
 });
 
-export default router;
+module.exports = router;
 ```
 
-**index.mjs:**
+**/routes/invoice/customers.js:**
 
 ```javascript
-import { Router } from "express";
-const router = Router();
+const router = require("express").Router();
 
 router.get("/", (req, res) => {
-  res.send("Homepage");
+  res.send("Customers list");
 });
 
-export default router;
+module.exports = router;
+```
+
+**/routes/invoice/merchants.js:**
+
+```javascript
+const router = require("express").Router();
+
+router.get("/", (req, res) => {
+  res.send("Merchants list");
+});
+
+module.exports = router;
 ```
 
 **routex.json:**
@@ -132,24 +166,40 @@ export default router;
 }
 ```
 
-In `index.mjs`, load and start the Express app with RouteX:
+In `index.js`, load and start the Express app with RouteX:
 
 ```javascript
-Copy code
-import express from 'express';
-import loadRoutes from 'routex';
+const express = require("express");
+const { RouteX } = require("@tralse/routex");
+const { fileURLToPath } = require("url");
 
 const app = express();
 
-// Load routes based on configuration files in the module's directory
-await loadRoutes(app);
+(async () => {
+  // Load routes using RouteX
+  await RouteX(app, __dirname);
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-console.log(`Server running on port ${PORT}`);
-});
+  // Start server
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+})();
 ```
+
+After running the server, you can now access the endpoints with format:
+
+```text
+http://localhost:3000/users
+http://localhost:3000/users/:id
+http://localhost:3000/products
+http://localhost:3000/invoice/customers
+http://localhost:3000/invoice/merchants
+```
+
+## Changelogs
+
+Stay tuned for updates. [See the CHANGELOG file](./CHANGELOG.md) for details.
 
 ## Contributing
 
@@ -157,4 +207,4 @@ Contributions are welcome! Fork the repository, make improvements, and submit a 
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. [See the LICENSE file](./LICENSE) for details.
