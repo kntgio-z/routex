@@ -8,4 +8,4 @@ tsup.config.ts
 .markdownlint.json
 
 #custom ignores
-/dump
+/_dump
