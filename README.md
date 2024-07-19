@@ -5,7 +5,7 @@
 
 RouteX is a lightweight package designed to simplify the management and loading of routes in an Express.js application based on configuration files. It automates the process of routing setup, allowing developers to define routes in configuration files and seamlessly integrate them into their Express.js projects.
 
-**ANNOUNCEMENT**: This version is now usable in `.mjs` files! Exclusive documentation of `.mjs` files will be released soon.
+**ANNOUNCEMENT**: This package is now **deprecated**. We moved to continue future versions to @tralsejr/routex.
 
 ## `RouteX` Function
 
